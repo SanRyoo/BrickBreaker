@@ -1,8 +1,6 @@
 #include <graphics.h>
 #include <stdlib.h>
 #include <time.h>
-#include <stdio.h>
-#include <math.h>
 
 struct Square
 {
@@ -28,7 +26,6 @@ Square create(int x, int y, bool touched)
 }
 
 int x, y, xPaddle, moveX, moveY, heart = 3, countOfUET = 48;
-char *ptrPaddle, *ptrBall;
 bool result, finished = 0;
 
 Square *arr = (Square *)malloc(sizeof(Square) * countOfUET);
@@ -116,7 +113,6 @@ void movePaddle()
 }
 void moveBall()
 {
-
     drawHeart();
     drawUET();
 
@@ -199,9 +195,6 @@ void newPaddle()
     xPaddle = 450;
     setfillstyle(1, 4);
     bar(xPaddle - 50, 575, xPaddle + 50, 600);
-    int sizePaddle = imagesize(xPaddle - 50, 575, xPaddle + 50, 600);
-    ptrPaddle = (char *)malloc(sizePaddle);
-    getimage(xPaddle - 50, 575, xPaddle + 50, 600, ptrPaddle);
 }
 void newBall()
 {
@@ -227,9 +220,6 @@ void newBall()
     setcolor(15);
     setfillstyle(1, 15);
     fillellipse(x, y, 10, 10);
-    int sizeBall = imagesize(x - 10, y - 10, x + 10, y + 10);
-    ptrBall = (char *)malloc(sizeBall);
-    getimage(x - 10, y - 10, x + 10, y + 10, ptrBall);
 }
 void mainLoop()
 {
@@ -252,7 +242,7 @@ void mainLoop()
             int keyPress = getch();
             if (keyPress == '2')
             {
-                break;
+                return;
             }
             else if (keyPress == '1')
             {
@@ -281,7 +271,7 @@ void mainLoop()
             int keyPress = getch();
             if (keyPress == '2')
             {
-                break;
+                return;
             }
             else if (keyPress == '1')
             {
