@@ -91,27 +91,35 @@ void movePaddle()
     char keyPress = getch();
     if (keyPress == 75)
     {
-        setcolor(4);
-        setfillstyle(1, 4);
-        putimage(xPaddle - 50, 575, ptrPaddle, 1);
+        setcolor(0);
+        setfillstyle(1, 0);
+        bar(xPaddle - 50, 575, xPaddle + 50, 600);
         xPaddle -= 10;
         if (xPaddle <= 50)
             xPaddle = 50;
-        putimage(xPaddle - 50, 575, ptrPaddle, 1);
+        setcolor(4);
+        setfillstyle(1, 4);
+        bar(xPaddle - 50, 575, xPaddle + 50, 600);
     }
     else if (keyPress == 77)
     {
-        setcolor(4);
-        setfillstyle(1, 4);
-        putimage(xPaddle - 50, 575, ptrPaddle, 1);
+        setcolor(0);
+        setfillstyle(1, 0);
+        bar(xPaddle - 50, 575, xPaddle + 50, 600);
         xPaddle += 10;
         if (xPaddle >= 850)
             xPaddle = 850;
-        putimage(xPaddle - 50, 575, ptrPaddle, 1);
+        setcolor(4);
+        setfillstyle(1, 4);
+        bar(xPaddle - 50, 575, xPaddle + 50, 600);
     }
 }
 void moveBall()
 {
+
+    drawHeart();
+    drawUET();
+
     setcolor(0);
     setfillstyle(1, 0);
     fillellipse(x, y, 10, 10);
@@ -122,7 +130,6 @@ void moveBall()
     setcolor(15);
     setfillstyle(1, 15);
     fillellipse(x, y, 10, 10);
-    drawUET();
 
     Sleep(1);
 
@@ -433,7 +440,7 @@ void createUET()
 
 int main()
 {
-    initwindow(900, 600);
+    initwindow(900, 600, (char *)"UET's Brick Breaker");
     setbkcolor(0);
     cleardevice();
 
