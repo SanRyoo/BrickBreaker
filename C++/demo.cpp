@@ -8,14 +8,12 @@ struct Square
     bool touched;
 };
 typedef struct Square Square;
-
 struct Check
 {
     int index;
     bool touched;
 };
 typedef struct Check Check;
-
 Square create(int x, int y, bool touched)
 {
     Square temp;
