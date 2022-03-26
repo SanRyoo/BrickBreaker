@@ -1,7 +1,6 @@
 #include <graphics.h>
 #include <stdlib.h>
 #include <time.h>
-
 struct Square
 {
     int x, y;
