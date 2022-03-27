@@ -1,7 +1,8 @@
 #include <graphics.h>
 #include <stdlib.h>
 #include <time.h>
-// tạo một struct lưu trữ giá trị của 1 ô để vẽ chữ UET
+// Luu Thai Son comment
+//  tạo một struct lưu trữ giá trị của 1 ô để vẽ chữ UET
 struct Square
 {
     int x, y;     // tọa độ x, y
