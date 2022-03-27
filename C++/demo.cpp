@@ -1,7 +1,7 @@
 #include <graphics.h>
 #include <stdlib.h>
 #include <time.h>
-// Luu Thai Son commentt
+// Luu Thai Son comment code
 //  tạo một struct lưu trữ giá trị của 1 ô để vẽ chữ UET
 struct Square
 {
