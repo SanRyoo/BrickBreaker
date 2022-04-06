@@ -52,8 +52,12 @@ void mainLoop();
 void drawSquare(Square square);
 void drawUET();
 void drawScore(int score, int color);
-Check checkBallToQuare_X();
-Check checkBallToQuare_Y();
+Check checkBallToSquare_X();
+Check checkBallToSquare_Y();
+bool checkBallToSquare();
+void giveHeart();
+void reduceSpeed();
+
 bool checkWin();
 void newGame();
 void createUET();
@@ -163,41 +167,20 @@ void moveBall()
 
     Sleep(1); // dừng màn hình một chút
 
-    // kiểm tra bóng vs 48 ô vuông
-    Check checkBallX = checkBallToQuare_X(), checkBallY = checkBallToQuare_Y();
-
-    // nếu chạm theo cả 2 phương(chạm chéo)
-    if (checkBallX.touched && checkBallY.touched)
+    if (checkBallToSquare())
     {
-        // set trạng thái của ô vuông là đã chạm
-        (arr + checkBallX.index)->touched = 1;
-        drawSquare(*(arr + checkBallX.index));
-        drawScore(score, 0);
-        score++;
-        drawScore(score, 15);
-        //đổi hướng cả hai phương
-        moveX *= -1;
-        moveY *= -1;
-    }
-    // neu chỉ chạm theo phương ngang
-    else if (checkBallX.touched && !checkBallY.touched)
-    {
-        (arr + checkBallX.index)->touched = 1;
-        drawSquare(*(arr + checkBallX.index));
-        drawScore(score, 0);
-        score++;
-        drawScore(score, 15);
-        moveX *= -1;
-    }
-    // neu chỉ chạm theo phương dọc
-    else if (!checkBallX.touched && checkBallY.touched)
-    {
-        (arr + checkBallY.index)->touched = 1;
-        drawSquare(*(arr + checkBallY.index));
-        drawScore(score, 0);
-        score++;
-        drawScore(score, 15);
-        moveY *= -1;
+        if (rand() % 2 == 0)
+        {
+            int present = rand() % 10;
+            if (present == 0 || present == 1 || present == 2)
+            {
+                giveHeart();
+            }
+            else if (present == 3 || present == 4 || present == 5)
+            {
+                reduceSpeed();
+            }
+        }
     }
     // nếu không chạm ô vuông
     else
@@ -457,7 +440,7 @@ void drawUET()
     }
 }
 // kiểm tra bóng chạm ô vuông theo phương ngang
-Check checkBallToQuare_X()
+Check checkBallToSquare_X()
 {
     Check temp; // tạo biến để lưu giá trị trả về
     // kiểm tra từng ô
@@ -476,7 +459,7 @@ Check checkBallToQuare_X()
     return temp; // trả về chưa bị chạm
 }
 // tương tự X
-Check checkBallToQuare_Y()
+Check checkBallToSquare_Y()
 {
     Check temp;
     for (int i = 0; i < countOfUET; i++)
@@ -501,6 +484,48 @@ bool checkWin()
             return 0;
     }
     return 1;
+}
+bool checkBallToSquare()
+{
+    // kiểm tra bóng vs 48 ô vuông
+    Check checkBallX = checkBallToSquare_X(), checkBallY = checkBallToSquare_Y();
+    // nếu chạm theo cả 2 phương(chạm chéo)
+    if (checkBallX.touched && checkBallY.touched)
+    {
+        // set trạng thái của ô vuông là đã chạm
+        (arr + checkBallX.index)->touched = 1;
+        drawSquare(*(arr + checkBallX.index));
+        drawScore(score, 0);
+        score++;
+        drawScore(score, 15);
+        //đổi hướng cả hai phương
+        moveX *= -1;
+        moveY *= -1;
+        return 1;
+    }
+    // neu chỉ chạm theo phương ngang
+    else if (checkBallX.touched && !checkBallY.touched)
+    {
+        (arr + checkBallX.index)->touched = 1;
+        drawSquare(*(arr + checkBallX.index));
+        drawScore(score, 0);
+        score++;
+        drawScore(score, 15);
+        moveX *= -1;
+        return 1;
+    }
+    // neu chỉ chạm theo phương dọc
+    else if (!checkBallX.touched && checkBallY.touched)
+    {
+        (arr + checkBallY.index)->touched = 1;
+        drawSquare(*(arr + checkBallY.index));
+        drawScore(score, 0);
+        score++;
+        drawScore(score, 15);
+        moveY *= -1;
+        return 1;
+    }
+    return 0;
 }
 // game mới
 void newGame()
@@ -582,6 +607,38 @@ void drawTutorial()
     outtextxy(950, 200, (char *)"LEFT: Move Left");
     outtextxy(950, 220, (char *)"RIGHT: Move Right");
     outtextxy(950, 240, (char *)"ESC: Pause");
+}
+void giveHeart()
+{
+    if (heart < 3)
+    {
+        heart++;
+        drawHeart();
+        setfillstyle(1, 0);
+        bar(950, 400, 1100, 420);
+        setcolor(15);
+        outtextxy(950, 400, (char *)"+1 Heart");
+    }
+}
+void reduceSpeed()
+{
+    if (abs(moveX) != 1 && abs(moveY) != 1)
+    {
+        if (moveY > 0)
+            moveY--;
+        else
+            moveY++;
+
+        if (moveX > 0)
+            moveX--;
+        else
+            moveX++;
+
+        setfillstyle(1, 0);
+        bar(950, 400, 1100, 420);
+        setcolor(15);
+        outtextxy(950, 400, (char *)"Reduce Speed");
+    }
 }
 
 int main()
