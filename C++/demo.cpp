@@ -1,6 +1,8 @@
 #include <graphics.h>
 #include <stdlib.h>
 #include <time.h>
+#include <string.h>
+
 // Luu Thai Son comment code
 //  tạo một struct lưu trữ giá trị của 1 ô để vẽ chữ UET
 struct Square
@@ -32,7 +34,8 @@ Square create(int x, int y, bool touched)
 // moveX, moveY hướng di chuyển và tốc độ của bóng theo phương ngang và dọc
 // heart: số máu còn lại(mặc định lúc bắt đầu  game là 3 máu)
 // countOfUET: số ô vuông cần thiết để vẽ chữ UET
-int x, y, xPaddle, moveX, moveY, heart = 3, countOfUET = 48;
+// điểm = 0
+int x, y, xPaddle, moveX, moveY, heart = 3, countOfUET = 48, score = 0;
 // finished: game kết thúc hay chưa(mặc định là chưa)
 // result: kết quả(1: thắng, 2: thua)
 bool result, finished = 0;
@@ -41,18 +44,20 @@ Square *arr = (Square *)malloc(sizeof(Square) * countOfUET);
 
 // khai báo tên hàm khá dễ hiểu, khỏi cần comment
 void drawHeart();
-void movePaddle();
+int movePaddle();
 void moveBall();
 void newPaddle();
 void newBall();
 void mainLoop();
 void drawSquare(Square square);
 void drawUET();
+void drawScore(int score, int color);
 Check checkBallToQuare_X();
 Check checkBallToQuare_Y();
 bool checkWin();
 void newGame();
 void createUET();
+void drawTutorial();
 
 // vẽ máu ở góc dưới bên phải màn hình
 void drawHeart()
@@ -102,7 +107,7 @@ void drawHeart()
  */
 
 // di chuyển thanh
-void movePaddle()
+int movePaddle()
 {
     char keyPress = getch(); // tạo biến lưu giá trị đc nhấn từ bàn phím
     if (keyPress == 75)      // nếu là phím LEFT
@@ -133,6 +138,7 @@ void movePaddle()
         setfillstyle(1, 4);
         bar(xPaddle - 50, 575, xPaddle + 50, 600);
     }
+    return keyPress;
 }
 // di chuyển bóng
 void moveBall()
@@ -140,6 +146,9 @@ void moveBall()
     // trước khi di chuyển bóng thì vẽ lại UET và máu để tránh việc màu của bóng đè lên
     drawHeart();
     drawUET();
+    setcolor(15);
+    line(900, 0, 900, 600);
+
     // vẽ tại vị trí cũ -- màu đen
     setcolor(0);
     setfillstyle(1, 0);
@@ -163,6 +172,9 @@ void moveBall()
         // set trạng thái của ô vuông là đã chạm
         (arr + checkBallX.index)->touched = 1;
         drawSquare(*(arr + checkBallX.index));
+        drawScore(score, 0);
+        score++;
+        drawScore(score, 15);
         //đổi hướng cả hai phương
         moveX *= -1;
         moveY *= -1;
@@ -172,6 +184,9 @@ void moveBall()
     {
         (arr + checkBallX.index)->touched = 1;
         drawSquare(*(arr + checkBallX.index));
+        drawScore(score, 0);
+        score++;
+        drawScore(score, 15);
         moveX *= -1;
     }
     // neu chỉ chạm theo phương dọc
@@ -179,6 +194,9 @@ void moveBall()
     {
         (arr + checkBallY.index)->touched = 1;
         drawSquare(*(arr + checkBallY.index));
+        drawScore(score, 0);
+        score++;
+        drawScore(score, 15);
         moveY *= -1;
     }
     // nếu không chạm ô vuông
@@ -189,30 +207,27 @@ void moveBall()
         {
             moveX *= -1;
         }
-        // chạm cạnh trên của thanh(-> đi lên)
+        // chạm 2 cạnh đứng của thanh (đổi hướng theo phương ngang rồi chết 1 mạng)
         else if (x <= xPaddle + 60 && x >= xPaddle - 60 && y >= 575)
         {
             moveX *= -1;
         }
-        // chạm cạnh trên
+
+        // chạm cạnh trên màn hình
         if (y <= 10)
         {
             moveY *= -1;
         }
-        // chạm cạnh phải của thanh (đổi hướng theo phương ngang rồi chết 1 mạng)
-        else if (y >= 565 && x >= xPaddle - 50 && x <= xPaddle + 50)
+        // chạm cạnh trên của thanh(-> đi lên)
+        else if (y >= 565 && y <= 568 && x >= xPaddle - 50 && x <= xPaddle + 50)
         {
-            if (moveY < 3)
+            if (moveY < 3 && moveX < 3)
             {
                 moveY++;
                 if (moveX > 0)
-                {
                     moveX++;
-                }
                 else
-                {
                     moveX--;
-                }
             }
             moveY *= -1;
         }
@@ -300,7 +315,9 @@ void mainLoop()
                 outtextxy(410, 450, (char *)"1. NEW GAME");
                 outtextxy(410, 470, (char *)"2. EXIT");
 
-                newGame();    // tạo game mới
+                drawScore(score, 0);
+                newGame(); // tạo game mới
+                drawScore(score, 15);
                 goto NEWGAME; // thực hiện lại mainloop
             }
         }
@@ -328,7 +345,9 @@ void mainLoop()
                 outtextxy(410, 400, (char *)"YOU WIN");
                 outtextxy(410, 450, (char *)"1. NEW GAME");
                 outtextxy(410, 470, (char *)"2. EXIT");
+                drawScore(score, 0);
                 newGame();
+                drawScore(score, 15);
                 goto NEWGAME;
             }
         }
@@ -336,7 +355,28 @@ void mainLoop()
     /* nếu không phải thắng, không phải thua thì là nhấn phím
     nhấn phím thì di chuyển thanh
     */
-    movePaddle();
+    if (movePaddle() == 27) // ESC
+    {
+        setcolor(15);
+        outtextxy(410, 450, (char *)"1. CONTINUE");
+        outtextxy(410, 470, (char *)"2. EXIT");
+        while (1)
+        {
+            int keyPress = getch();
+            if (keyPress == '2')
+            {
+                return;
+            }
+            else if (keyPress == '1')
+            {
+                setcolor(0);
+                outtextxy(410, 450, (char *)"1. CONTINUE");
+                outtextxy(410, 470, (char *)"2. EXIT");
+                break;
+                goto NEWGAME;
+            }
+        }
+    }
 NEWGAME:
     mainLoop(); // gọi lại hàm(đệ quy)
 }
@@ -363,6 +403,51 @@ void drawSquare(Square square)
     }
     // vẽ
     bar(square.x, square.y, square.x + 19, square.y + 19);
+}
+// vẽ điểm
+char *intToString(int a)
+{
+    char *s = (char *)malloc(sizeof(char) * 10);
+    for (int i = 0; i <= 8; i++)
+    {
+        s[i] = '0';
+    }
+    s[9] = '\0';
+
+    int i = 8;
+    while (a > 0)
+    {
+        s[i] = a % 10 + '0';
+        a /= 10;
+        i--;
+    }
+    while (s[0] == '0')
+    {
+        for (int j = 0; j < strlen(s) - 1; j++)
+        {
+            s[j] = s[j + 1];
+        }
+        s[strlen(s) - 1] = '\0';
+    }
+    if (strlen(s) == 0)
+    {
+        s[0] = '0';
+        s[1] = '\0';
+    }
+    return s;
+}
+void drawScore(int score, int color)
+{
+    setfillstyle(1, 8);
+    bar(980, 90, 999, 109);
+
+    char *temp = (char *)malloc(sizeof(char) * 15);
+
+    temp = intToString(score);
+    strcat(temp, (char *)"/48");
+
+    setcolor(color);
+    outtextxy(1010, 93, temp);
 }
 void drawUET()
 {
@@ -422,13 +507,13 @@ void newGame()
 {
     finished = 0; // chưa kết thúc
     heart = 3;    //đặt lại máu
+    score = 0;
     for (int i = 0; i < countOfUET; i++)
     {
         (arr + i)->touched = 0; //đặt lại tất cả ô vuông đều chưa bị chạm
     }
     drawUET(); // vẽ lại uet
 }
-
 void createUET()
 {
     /* U */
@@ -491,16 +576,25 @@ void createUET()
     *(arr + 46) = create(640, 280, 0);
     *(arr + 47) = create(640, 300, 0);
 }
+void drawTutorial()
+{
+    setcolor(15);
+    outtextxy(950, 200, (char *)"LEFT: Move Left");
+    outtextxy(950, 220, (char *)"RIGHT: Move Right");
+    outtextxy(950, 240, (char *)"ESC: Pause");
+}
 
 int main()
 {
-    initwindow(900, 600, (char *)"UET's Brick Breaker");
+    initwindow(1100, 600, (char *)"UET's Brick Breaker");
     setbkcolor(0);
     cleardevice();
 
     createUET();
     drawUET();
     drawHeart();
+    drawScore(score, 15);
+    drawTutorial();
 
     newPaddle();
     newBall();
