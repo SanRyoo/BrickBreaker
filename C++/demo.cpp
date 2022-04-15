@@ -174,9 +174,9 @@ bool moveBall(int i)
 
     if (checkBallToSquare(i))
     {
-        if (1)
+        if (rand() % 4 == 0)
         {
-            int present = 8;
+            int present = rand() % 10;
             if (present == 0 || present == 1 || present == 2)
             {
                 giveHeart();
